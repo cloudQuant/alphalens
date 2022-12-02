@@ -163,7 +163,10 @@ def quantize_factor(factor_data,
     if by_group:
         grouper.append('group')
 
-    factor_quantile = factor_data.groupby(grouper)['factor'] \
+    # factor_quantile = factor_data.groupby(grouper)['factor'] \
+    #     .apply(quantile_calc, quantiles, bins, zero_aware, no_raise)
+    # todo 根据pandas的升级，对groupby增加相应的参数
+    factor_quantile = factor_data.groupby(grouper,group_keys=False)['factor'] \
         .apply(quantile_calc, quantiles, bins, zero_aware, no_raise)
     factor_quantile.name = 'factor_quantile'
 
@@ -315,8 +318,9 @@ def compute_forward_returns(factor,
             end = prices.index[p_idx + period]
             period_len = diff_custom_calendar_timedeltas(start, end, freq)
             days_diffs.append(period_len.components.days)
-
-        delta_days = period_len.components.days - mode(days_diffs).mode[0]
+        # delta_days = period_len.components.days - mode(days_diffs).mode[0]
+        # todo 根据scipy升级的需要，对mode函数增加参数，keepdims=True
+        delta_days = period_len.components.days - mode(days_diffs,keepdims=True).mode[0]
         period_len -= pd.Timedelta(days=delta_days)
         label = timedelta_to_string(period_len)
 
@@ -907,10 +911,7 @@ def get_forward_returns_columns(columns, require_exact_day_multiple=False):
         valid_columns = [(pattern.match(col) is not None) for col in columns]
 
         if sum(valid_columns) < len(valid_columns):
-            warnings.warn(
-                "Skipping return periods that aren't exact multiples"
-                + " of days."
-            )
+            warnings.warn("Skipping return periods that aren't exact multiples of days.")
     else:
         pattern = re.compile(r"^(\d+([Dhms]|ms|us|ns]))+$", re.IGNORECASE)
         valid_columns = [(pattern.match(col) is not None) for col in columns]
