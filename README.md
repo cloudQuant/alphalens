@@ -3,35 +3,14 @@
 #### 介绍
 基于quantopian的因子分析框架alphalens，进行改进优化
 
-#### 软件架构
-软件架构说明
+#### 使用方法
 
+1. cd xxx/site-packages
+2. git clone https://gitee.com/yunjinqi/alphalens.git
 
-#### 安装教程
+#### alphalens改进
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+- [x] 2022-12-06 改进画出来收益率的时候只显示持仓一天的收益率图，修改过后显示所有持仓时间的收益率图
+- [x] 2022-12-02 改进一些因为python包更新导致报警告信息
+- [x] 2022-12-02 将tears.py中的get_values()函数改为to_numpy()
 
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
