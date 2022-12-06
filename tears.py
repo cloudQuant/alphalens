@@ -277,20 +277,25 @@ def create_returns_tear_sheet(
 
     # Compute cumulative returns from daily simple returns, if '1D'
     # returns are provided.
-    if "1D" in factor_returns:
+    # todo 增加不同持仓日期的收益率
+    # print(type(factor_returns))
+    # print(factor_returns.keys())
+    # if "1D" in factor_returns:
+    for hold_days in factor_returns.keys():
         title = (
             "Factor Weighted "
             + ("Group Neutral " if group_neutral else "")
             + ("Long/Short " if long_short else "")
-            + "Portfolio Cumulative Return (1D Period)"
+            + "Portfolio Cumulative Return ("
+            + hold_days + "Period)"
         )
 
         plotting.plot_cumulative_returns(
-            factor_returns["1D"], period="1D", title=title, ax=gf.next_row()
+            factor_returns[hold_days], period=hold_days, title=title, ax=gf.next_row()
         )
 
         plotting.plot_cumulative_returns_by_quantile(
-            mean_quant_ret_bydate["1D"], period="1D", ax=gf.next_row()
+            mean_quant_ret_bydate[hold_days], period=hold_days, ax=gf.next_row()
         )
 
     ax_mean_quantile_returns_spread_ts = [
