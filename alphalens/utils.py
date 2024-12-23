@@ -78,6 +78,7 @@ def non_unique_bin_edges_error(func):
             if 'Bin edges must be unique' in str(e):
                 rethrow(e, message)
             raise
+
     return dec
 
 
@@ -166,7 +167,7 @@ def quantize_factor(factor_data,
     # factor_quantile = factor_data.groupby(grouper)['factor'] \
     #     .apply(quantile_calc, quantiles, bins, zero_aware, no_raise)
     # todo 根据pandas的升级，对groupby增加相应的参数
-    factor_quantile = factor_data.groupby(grouper,group_keys=False)['factor'] \
+    factor_quantile = factor_data.groupby(grouper, observed=False, group_keys=False)['factor'] \
         .apply(quantile_calc, quantiles, bins, zero_aware, no_raise)
     factor_quantile.name = 'factor_quantile'
 
@@ -320,7 +321,7 @@ def compute_forward_returns(factor,
             days_diffs.append(period_len.components.days)
         # delta_days = period_len.components.days - mode(days_diffs).mode[0]
         # todo 根据scipy升级的需要，对mode函数增加参数，keepdims=True
-        delta_days = period_len.components.days - mode(days_diffs,keepdims=True).mode[0]
+        delta_days = period_len.components.days - mode(days_diffs, keepdims=True).mode[0]
         period_len -= pd.Timedelta(days=delta_days)
         label = timedelta_to_string(period_len)
 
@@ -414,7 +415,7 @@ def demean_forward_returns(factor_data, grouper=None):
         grouper = factor_data.index.get_level_values('date')
 
     cols = get_forward_returns_columns(factor_data.columns)
-    factor_data[cols] = factor_data.groupby(grouper)[cols] \
+    factor_data[cols] = factor_data.groupby(grouper, observed=False)[cols] \
         .transform(lambda x: x - x.mean())
 
     return factor_data

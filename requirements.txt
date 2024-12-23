@@ -1,0 +1,14 @@
+matplotlib
+numpy
+pandas
+scipy
+seaborn
+statsmodels
+ipython
+empyrical
+pytest
+pytest-benchmark
+pytest-sugar
+pytest-cov
+pytest-picked
+pytest-xdist

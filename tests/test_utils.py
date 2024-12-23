@@ -14,6 +14,8 @@
 # limitations under the License.
 
 from __future__ import division
+import pytest
+import matplotlib.pyplot as plt
 from unittest import TestCase
 from parameterized import parameterized
 from numpy import (nan)
@@ -27,12 +29,18 @@ from pandas import (
     Timestamp,
     concat,
 )
-from pandas.util.testing import (assert_frame_equal,
-                                 assert_series_equal)
+from pandas.testing import (assert_frame_equal,
+                            assert_series_equal)
 
-from .. utils import (get_clean_factor_and_forward_returns,
-                      compute_forward_returns,
-                      quantize_factor)
+from alphalens.utils import (get_clean_factor_and_forward_returns,
+                             compute_forward_returns,
+                             quantize_factor)
+
+
+@pytest.fixture(autouse=True)
+def cleanup_matplotlib():
+    yield
+    plt.close('all')  # Clean up matplotlib figures after each test
 
 
 class UtilsTestCase(TestCase):
@@ -193,7 +201,7 @@ class UtilsTestCase(TestCase):
 
         factor_groups = {'A': 1, 'B': 2, 'C': 1, 'D': 2, 'E': 1, 'F': 2}
 
-        price_data = [[1.10**i, 0.50**i, 3.00**i, 0.90**i, 0.50**i, 1.00**i]
+        price_data = [[1.10 ** i, 0.50 ** i, 3.00 ** i, 0.90 ** i, 0.50 ** i, 1.00 ** i]
                       for i in range(1, 7)]  # 6 days = 3 + 3 fwd returns
 
         factor_data = [[3, 4, 2, 1, nan, nan],
@@ -222,17 +230,17 @@ class UtilsTestCase(TestCase):
         expected_idx = factor.index.rename(['date', 'asset'])
         expected_cols = ['1D', '2D', '3D',
                          'factor', 'group', 'factor_quantile']
-        expected_data = [[0.1,  0.21,  0.331, 3.0, 1, 3],
+        expected_data = [[0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.5, -0.75, -0.875, 4.0, 2, 4],
-                         [2.0,  8.00, 26.000, 2.0, 1, 2],
+                         [2.0, 8.00, 26.000, 2.0, 1, 2],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1],
-                         [0.1,  0.21,  0.331, 3.0, 1, 3],
+                         [0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1],
                          [-0.5, -0.75, -0.875, 4.0, 1, 4],
-                         [0.0,  0.00,  0.000, 2.0, 2, 2],
-                         [0.1,  0.21,  0.331, 3.0, 1, 3],
+                         [0.0, 0.00, 0.000, 2.0, 2, 2],
+                         [0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.5, -0.75, -0.875, 4.0, 2, 4],
-                         [2.0,  8.00, 26.000, 2.0, 1, 2],
+                         [2.0, 8.00, 26.000, 2.0, 1, 2],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1]]
         expected = DataFrame(index=expected_idx,
                              columns=expected_cols, data=expected_data)
@@ -249,7 +257,7 @@ class UtilsTestCase(TestCase):
 
         factor_groups = {'A': 1, 'B': 2, 'C': 1, 'D': 2, 'E': 1, 'F': 2}
 
-        price_data = [[1.10**i, 0.50**i, 3.00**i, 0.90**i, 0.50**i, 1.00**i]
+        price_data = [[1.10 ** i, 0.50 ** i, 3.00 ** i, 0.90 ** i, 0.50 ** i, 1.00 ** i]
                       for i in range(1, 7)]  # 6 days = 3 + 3 fwd returns
 
         factor_data = [[3, 4, 2, 1, nan, nan],
@@ -278,17 +286,17 @@ class UtilsTestCase(TestCase):
         expected_idx = factor.index.rename(['date', 'asset'])
         expected_cols = ['1D', '2D', '3D',
                          'factor', 'group', 'factor_quantile']
-        expected_data = [[0.1,  0.21,  0.331, 3.0, 1, 3],
+        expected_data = [[0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.5, -0.75, -0.875, 4.0, 2, 4],
-                         [2.0,  8.00, 26.000, 2.0, 1, 2],
+                         [2.0, 8.00, 26.000, 2.0, 1, 2],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1],
-                         [0.1,  0.21,  0.331, 3.0, 1, 3],
+                         [0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1],
                          [-0.5, -0.75, -0.875, 4.0, 1, 4],
-                         [0.0,  0.00,  0.000, 2.0, 2, 2],
-                         [0.1,  0.21,  0.331, 3.0, 1, 3],
+                         [0.0, 0.00, 0.000, 2.0, 2, 2],
+                         [0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.5, -0.75, -0.875, 4.0, 2, 4],
-                         [2.0,  8.00, 26.000, 2.0, 1, 2],
+                         [2.0, 8.00, 26.000, 2.0, 1, 2],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1]]
         expected = DataFrame(index=expected_idx,
                              columns=expected_cols, data=expected_data)
@@ -304,7 +312,7 @@ class UtilsTestCase(TestCase):
 
         factor_groups = {'A': 1, 'B': 2, 'C': 1, 'D': 2, 'E': 1, 'F': 2}
 
-        price_data = [[1.10**i, 0.50**i, 3.00**i, 0.90**i, 0.50**i, 1.00**i]
+        price_data = [[1.10 ** i, 0.50 ** i, 3.00 ** i, 0.90 ** i, 0.50 ** i, 1.00 ** i]
                       for i in range(1, 5)]  # 4 days = 3 + 1 fwd returns
 
         factor_data = [[3, 4, 2, 1, nan, nan],
@@ -368,7 +376,7 @@ class UtilsTestCase(TestCase):
 
         factor_groups = {'A': 1, 'B': 2, 'C': 1, 'D': 2, 'E': 1, 'F': 2}
 
-        price_data = [[1.10**i, 0.50**i, 3.00**i, 0.90**i, 0.50**i, 1.00**i]
+        price_data = [[1.10 ** i, 0.50 ** i, 3.00 ** i, 0.90 ** i, 0.50 ** i, 1.00 ** i]
                       for i in range(1, 9)]
 
         factor_data = [[1, nan, nan, nan, nan, 6],
@@ -395,13 +403,13 @@ class UtilsTestCase(TestCase):
         expected_idx = factor.index.rename(['date', 'asset'])
         expected_cols = ['1D', '2D', '3D',
                          'factor', 'group', 'factor_quantile']
-        expected_data = [[0.1,  0.21,  0.331, 1.0, 1, 1],
-                         [0.0,   0.00,  0.000, 6.0, 2, 4],
-                         [0.1,  0.21,  0.331, 4.0, 1, 1],
+        expected_data = [[0.1, 0.21, 0.331, 1.0, 1, 1],
+                         [0.0, 0.00, 0.000, 6.0, 2, 4],
+                         [0.1, 0.21, 0.331, 4.0, 1, 1],
                          [-0.1, -0.19, -0.271, 7.0, 2, 4],
                          [-0.5, -0.75, -0.875, 3.0, 2, 4],
                          [-0.1, -0.19, -0.271, 2.0, 2, 1],
-                         [2.0,  8.00, 26.000, 1.0, 1, 1],
+                         [2.0, 8.00, 26.000, 1.0, 1, 1],
                          [-0.5, -0.75, -0.875, 3.0, 1, 4]]
         expected = DataFrame(index=expected_idx,
                              columns=expected_cols, data=expected_data)
@@ -418,7 +426,7 @@ class UtilsTestCase(TestCase):
 
         factor_groups = {'A': 1, 'B': 2, 'C': 1, 'D': 2, 'E': 1, 'F': 2}
 
-        price_data = [[1.10**i, 0.50**i, 3.00**i, 0.90**i, 0.50**i, 1.00**i]
+        price_data = [[1.10 ** i, 0.50 ** i, 3.00 ** i, 0.90 ** i, 0.50 ** i, 1.00 ** i]
                       for i in range(1, 20)]  # 19 days = 18 + 1 fwd returns
 
         factor_data = [[3, 4, 2, 1, nan, nan],
@@ -491,7 +499,7 @@ class UtilsTestCase(TestCase):
 
         factor_groups = {'A': 1, 'B': 2, 'C': 1, 'D': 2, 'E': 1, 'F': 2}
 
-        price_data = [[1.10**i, 0.50**i, 3.00**i, 0.90**i, 0.50**i, 1.00**i]
+        price_data = [[1.10 ** i, 0.50 ** i, 3.00 ** i, 0.90 ** i, 0.50 ** i, 1.00 ** i]
                       for i in range(1, 22)]  # 21 days = 18 + 3 fwd returns
 
         factor_data = [[3, 4, 2, 1, nan, nan],
@@ -524,17 +532,17 @@ class UtilsTestCase(TestCase):
         expected_idx = factor.index.rename(['date', 'asset'])
         expected_cols = ['1D', '2D', '3D',
                          'factor', 'group', 'factor_quantile']
-        expected_data = [[0.1,  0.21,  0.331, 3.0, 1, 3],
+        expected_data = [[0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.5, -0.75, -0.875, 4.0, 2, 4],
-                         [2.0,  8.00, 26.000, 2.0, 1, 2],
+                         [2.0, 8.00, 26.000, 2.0, 1, 2],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1],
-                         [0.1,  0.21,  0.331, 3.0, 1, 3],
+                         [0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1],
                          [-0.5, -0.75, -0.875, 4.0, 1, 4],
-                         [0.0,  0.00,  0.000, 2.0, 2, 2],
-                         [0.1,  0.21,  0.331, 3.0, 1, 3],
+                         [0.0, 0.00, 0.000, 2.0, 2, 2],
+                         [0.1, 0.21, 0.331, 3.0, 1, 3],
                          [-0.5, -0.75, -0.875, 4.0, 2, 4],
-                         [2.0,  8.00, 26.000, 2.0, 1, 2],
+                         [2.0, 8.00, 26.000, 2.0, 1, 2],
                          [-0.1, -0.19, -0.271, 1.0, 2, 1]] * 6  # 18  days
         expected = DataFrame(index=expected_idx,
                              columns=expected_cols, data=expected_data)

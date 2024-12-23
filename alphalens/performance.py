@@ -69,7 +69,7 @@ def factor_information_coefficient(factor_data,
     if by_group:
         grouper.append('group')
 
-    ic = factor_data.groupby(grouper).apply(src_ic)
+    ic = factor_data.groupby(grouper, observed=False).apply(src_ic)
 
     return ic
 
@@ -83,7 +83,7 @@ def mean_information_coefficient(factor_data,
     Answers questions like:
     What is the mean IC for each month?
     What is the mean IC for each group for our whole timerange?
-    What is the mean IC for for each group, each week?
+    What is the mean IC for  each group, each week?
 
     Parameters
     ----------
@@ -113,6 +113,8 @@ def mean_information_coefficient(factor_data,
 
     grouper = []
     if by_time is not None:
+        if by_time == 'M':
+            by_time = "ME"
         grouper.append(pd.Grouper(freq=by_time))
     if by_group:
         grouper.append('group')
@@ -121,10 +123,92 @@ def mean_information_coefficient(factor_data,
         ic = ic.mean()
 
     else:
-        ic = (ic.reset_index().set_index('date').groupby(grouper).mean())
+        ic = (ic.reset_index().set_index('date').groupby(grouper, observed=False).mean())
 
     return ic
 
+
+# def factor_weights(factor_data,
+#                    demeaned=True,
+#                    group_adjust=False,
+#                    equal_weight=False):
+#     """
+#     Computes asset weights by factor values and dividing by the sum of their
+#     absolute value (achieving gross leverage of 1). Positive factor values will
+#     results in positive weights and negative values in negative weights.
+#
+#     Parameters
+#     ----------
+#     factor_data : pd.DataFrame - MultiIndex
+#         A MultiIndex DataFrame indexed by date (level 0) and asset (level 1),
+#         containing the values for a single alpha factor, forward returns for
+#         each period, the factor quantile/bin that factor value belongs to, and
+#         (optionally) the group the asset belongs to.
+#         - See full explanation in utils.get_clean_factor_and_forward_returns
+#     demeaned : bool
+#         Should this computation happen on a long short portfolio? if True,
+#         weights are computed by demeaning factor values and dividing by the sum
+#         of their absolute value (achieving gross leverage of 1). The sum of
+#         positive weights will be the same as the negative weights (absolute
+#         value), suitable for a dollar neutral long-short portfolio
+#     group_adjust : bool
+#         Should this computation happen on a group neutral portfolio? If True,
+#         compute group neutral weights: each group will weight the same and
+#         if 'demeaned' is enabled the factor values demeaning will occur on the
+#         group level.
+#     equal_weight : bool, optional
+#         if True the assets will be equal-weighted instead of factor-weighted
+#         If demeaned is True then the factor universe will be split in two
+#         equal sized groups, top assets with positive weights and bottom assets
+#         with negative weights
+#
+#     Returns
+#     -------
+#     returns : pd.Series
+#         Assets weighted by factor value.
+#     """
+#
+#     def to_weights(group, _demeaned, _equal_weight):
+#
+#         if _equal_weight:
+#             group = group.copy()
+#
+#             if _demeaned:
+#                 # top assets positive weights, bottom ones negative
+#                 group = group - group.median()
+#
+#             negative_mask = group < 0
+#             group[negative_mask] = -1.0
+#             positive_mask = group > 0
+#             group[positive_mask] = 1.0
+#
+#             if _demeaned:
+#                 # positive weights must equal negative weights
+#                 if negative_mask.any():
+#                     group[negative_mask] /= negative_mask.sum()
+#                 if positive_mask.any():
+#                     group[positive_mask] /= positive_mask.sum()
+#
+#         elif _demeaned:
+#             group = group - group.mean()
+#
+#         return group / group.abs().sum()
+#
+#     grouper = [factor_data.index.get_level_values('date')]
+#     if group_adjust:
+#         grouper.append('group')
+#
+#     # weights = factor_data.groupby(grouper)['factor'] \
+#     #     .apply(to_weights, demeaned, equal_weight)
+#     weights = factor_data.groupby(grouper, observed=False, group_keys=False)['factor'] \
+#         .apply(to_weights, demeaned, equal_weight)
+#
+#     if group_adjust:
+#         weights = weights.groupby(level='date').apply(to_weights, False, False)
+#     print("Weights index names:", weights.index.names)
+#     print("weights", weights)
+#     print("type(weights)", type(weights))
+#     return weights
 
 def factor_weights(factor_data,
                    demeaned=True,
@@ -133,7 +217,7 @@ def factor_weights(factor_data,
     """
     Computes asset weights by factor values and dividing by the sum of their
     absolute value (achieving gross leverage of 1). Positive factor values will
-    results in positive weights and negative values in negative weights.
+    result in positive weights and negative values in negative weights.
 
     Parameters
     ----------
@@ -196,15 +280,12 @@ def factor_weights(factor_data,
     if group_adjust:
         grouper.append('group')
 
-    # weights = factor_data.groupby(grouper)['factor'] \
-    #     .apply(to_weights, demeaned, equal_weight)
-    # todo 根据pandas升级的需要，对groupby增加参数
-    weights = factor_data.groupby(grouper,group_keys=False)['factor'] \
+    # 计算权重
+    weights = factor_data.groupby(grouper, observed=False, group_keys=False)['factor'] \
         .apply(to_weights, demeaned, equal_weight)
-
+    # # 修复索引名称
     if group_adjust:
-        weights = weights.groupby(level='date').apply(to_weights, False, False)
-
+        weights = weights.groupby(level=0, group_keys=False, observed=False).apply(to_weights, False, False)
     return weights
 
 
@@ -242,18 +323,20 @@ def factor_returns(factor_data,
     returns : pd.DataFrame
         Period wise factor returns
     """
-
+    # # 检查并修复 factor_data 的索引名称
+    # if factor_data.index.names.count('date') > 1:
+    #     # 重命名索引名称
+    #     factor_data.index.names = ['date', 'asset']
     weights = \
         factor_weights(factor_data, demeaned, group_adjust, equal_weight)
-
     weighted_returns = \
         factor_data[utils.get_forward_returns_columns(factor_data.columns)] \
-        .multiply(weights, axis=0)
+        .multiply(weights, axis=0, level='asset')
 
     if by_asset:
         returns = weighted_returns
     else:
-        returns = weighted_returns.groupby(level='date').sum()
+        returns = weighted_returns.groupby(level=0).sum()
 
     return returns
 
@@ -500,7 +583,7 @@ def mean_return_by_quantile(factor_data,
     if by_group:
         grouper.append('group')
 
-    group_stats = factor_data.groupby(grouper)[
+    group_stats = factor_data.groupby(grouper, observed=False)[
         utils.get_forward_returns_columns(factor_data.columns)] \
         .agg(['mean', 'std', 'count'])
 
@@ -510,7 +593,7 @@ def mean_return_by_quantile(factor_data,
         grouper = [mean_ret.index.get_level_values('factor_quantile')]
         if by_group:
             grouper.append(mean_ret.index.get_level_values('group'))
-        group_stats = mean_ret.groupby(grouper)\
+        group_stats = mean_ret.groupby(grouper, observed=False)\
             .agg(['mean', 'std', 'count'])
         mean_ret = group_stats.T.xs('mean', level=1).T
 
@@ -705,18 +788,22 @@ def common_start_returns(factor,
         starting_index = max(day_zero_index - before, 0)
         ending_index = min(day_zero_index + after + 1,
                            len(returns.index))
+        # 确保 starting_index 和 ending_index 是 datetime 类型
+        # starting_index = returns.index[max(day_zero_index - before, 0)]
+        # ending_index = returns.index[min(day_zero_index + after + 1, len(returns.index))]
 
         equities_slice = set(equities)
         if demean_by is not None:
             demean_equities = demean_by.loc[timestamp] \
                 .index.get_level_values('asset')
             equities_slice |= set(demean_equities)
-
+        # print("type(returns.index[starting_index:ending_index]) = ", returns.index[starting_index:ending_index])
         series = returns.loc[returns.index[starting_index:ending_index],
-                             equities_slice]
+                             list(equities_slice)]
+        # series = returns[(returns.index >= starting_index) & (returns.index < ending_index)][equities_slice]
         series.index = range(starting_index - day_zero_index,
                              ending_index - day_zero_index)
-
+        print("series = ", series)
         if demean_by is not None:
             mean = series.loc[:, demean_equities].mean(axis=1)
             series = series.loc[:, equities]
@@ -728,6 +815,92 @@ def common_start_returns(factor,
         all_returns.append(series)
 
     return pd.concat(all_returns, axis=1)
+
+# def common_start_returns(factor,
+#                          returns,
+#                          before,
+#                          after,
+#                          cumulative=False,
+#                          mean_by_date=False,
+#                          demean_by=None):
+#     """
+#     A date and equity pair is extracted from each index row in the factor
+#     dataframe and for each of these pairs a return series is built starting
+#     from 'before' the date and ending 'after' the date specified in the pair.
+#     All those returns series are then aligned to a common index (-before to
+#     after) and returned as a single DataFrame
+#
+#     Parameters
+#     ----------
+#     factor : pd.DataFrame
+#         DataFrame with at least date and equity as index, the columns are
+#         irrelevant
+#     returns : pd.DataFrame
+#         A wide form Pandas DataFrame indexed by date with assets in the
+#         columns. Returns data should span the factor analysis time period
+#         plus/minus an additional buffer window corresponding to after/before
+#         period parameters.
+#     before:
+#         How many returns to load before factor date
+#     after:
+#         How many returns to load after factor date
+#     cumulative: bool, optional
+#         Whether or not the given returns are cumulative. If False the given
+#         returns are assumed to be daily.
+#     mean_by_date: bool, optional
+#         If True, compute mean returns for each date and return that
+#         instead of a return series for each asset
+#     demean_by: pd.DataFrame, optional
+#         DataFrame with at least date and equity as index, the columns are
+#         irrelevant. For each date a list of equities is extracted from
+#         'demean_by' index and used as universe to compute demeaned mean
+#         returns (long short portfolio)
+#
+#     Returns
+#     -------
+#     aligned_returns : pd.DataFrame
+#         Dataframe containing returns series for each factor aligned to the same
+#         index: -before to after
+#     """
+#     if not cumulative:
+#         returns = returns.apply(cumulative_returns, axis=0)
+#
+#     all_returns = []
+#
+#     for timestamp, df in factor.groupby(level='date'):
+#
+#         equities = df.index.get_level_values('asset')
+#
+#         try:
+#             day_zero_index = returns.index.get_loc(timestamp)
+#         except KeyError:
+#             continue
+#
+#         # 确保 starting_index 和 ending_index 是 datetime 类型
+#         starting_index = returns.index[max(day_zero_index - before, 0)]
+#         ending_index = returns.index[min(day_zero_index + after + 1, len(returns.index))]
+#
+#         equities_slice = set(equities)
+#         if demean_by is not None:
+#             demean_equities = demean_by.loc[timestamp] \
+#                 .index.get_level_values('asset')
+#             equities_slice |= set(demean_equities)
+#
+#         # 使用 datetime 类型的索引器
+#         series = returns[(returns.index >= starting_index) & (returns.index < ending_index)][equities_slice]
+#         series.index = range(day_zero_index - before, day_zero_index + after + 1)
+#
+#         if demean_by is not None:
+#             mean = series.loc[:, demean_equities].mean(axis=1)
+#             series = series.loc[:, equities]
+#             series = series.sub(mean, axis=0)
+#
+#         if mean_by_date:
+#             series = series.mean(axis=1)
+#
+#         all_returns.append(series)
+#
+#     return pd.concat(all_returns, axis=1)
 
 
 def average_cumulative_return_by_quantile(factor_data,
