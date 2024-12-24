@@ -186,8 +186,14 @@ def plot_information_table(ic_data):
 
 
 def plot_quantile_statistics_table(factor_data):
+    factor_data = factor_data.copy()
+    if 'group' in factor_data.columns:
+        factor_data.drop('group', axis=1, inplace=True)
+    factor_data['factor_quantile'] = factor_data['factor_quantile'].astype(float)
+    # print("factor_data = ", factor_data)
     quantile_stats = factor_data.groupby('factor_quantile') \
         .agg(['min', 'max', 'mean', 'std', 'count'])['factor']
+
     quantile_stats['count %'] = quantile_stats['count'] \
         / quantile_stats['count'].sum() * 100.
 

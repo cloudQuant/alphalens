@@ -524,7 +524,6 @@ def create_full_tear_sheet(factor_data,
     by_group : bool
         If True, display graphs separately for each group.
     """
-
     plotting.plot_quantile_statistics_table(factor_data)
     create_returns_tear_sheet(
         factor_data, long_short, group_neutral, by_group, set_context=False
