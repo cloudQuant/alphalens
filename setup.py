@@ -1,7 +1,28 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
-from alphalens import versioneer
 import sys
+import os
+
+# Simple version management to avoid dependency issues during CI
+def get_version():
+    """Get version from _version.py or fallback to default"""
+    try:
+        # Try to read version from _version.py
+        version_file = os.path.join(os.path.dirname(__file__), 'alphalens', '_version.py')
+        if os.path.exists(version_file):
+            with open(version_file, 'r') as f:
+                content = f.read()
+                # Extract version from the file
+                for line in content.split('\n'):
+                    if line.strip().startswith('version ='):
+                        return line.split('=')[1].strip().strip('"\'')
+    except:
+        pass
+    return "1.0.0+dev"
+
+def get_cmdclass():
+    """Return empty cmdclass to avoid versioneer dependency"""
+    return {}
 
 long_description = ''
 
@@ -38,8 +59,8 @@ extra_reqs = {
 if __name__ == "__main__":
     setup(
         name='alphalens',
-        version=versioneer.get_version(),
-        cmdclass=versioneer.get_cmdclass(),
+        version=get_version(),
+        cmdclass=get_cmdclass(),
         description='Performance analysis of predictive (alpha) stock factors',
         author='Quantopian Inc. and cloudQuant',
         author_email='yunjinqi@gmail.com',

@@ -1,12 +1,14 @@
-matplotlib
+# Core dependencies (install in order)
 numpy
 pandas
 scipy
+matplotlib
 seaborn
 statsmodels
 ipython
 # Install empyrical from Gitee mirror for China users
 git+https://gitee.com/yunjinqi/empyrical.git
+# Test dependencies
 pytest
 pytest-benchmark
 pytest-sugar

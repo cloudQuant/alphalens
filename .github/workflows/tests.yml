@@ -46,7 +46,7 @@ jobs:
     - name: Install dependencies step by step
       shell: bash
       run: |
-        # Install core dependencies first
+        # Install core dependencies first (in order)
         pip install "numpy>=1.11.0" || pip install numpy
         pip install "pandas>=0.18.0" || pip install pandas
         pip install "scipy>=0.17.0" || pip install scipy
@@ -127,7 +127,10 @@ jobs:
     - name: Install core dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython pytest parameterized
+        # Install in correct order to avoid import issues
+        pip install numpy
+        pip install pandas
+        pip install scipy matplotlib seaborn statsmodels IPython pytest parameterized
         pip install -U "git+https://github.com/cloudQuant/empyrical.git"
         
     - name: Install package
@@ -185,7 +188,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython
+        # Install core dependencies in order
+        pip install numpy
+        pip install pandas
+        pip install scipy matplotlib seaborn statsmodels IPython
         pip install -U "git+https://github.com/cloudQuant/empyrical.git"
         pip install pytest pytest-cov pytest-xdist parameterized
         pip install -e .

@@ -10,16 +10,23 @@ Alphalens is a performance analysis library for predictive (alpha) stock factors
 
 ### Installation
 ```bash
-# Install dependencies (empyrical from git repository)
+# Install dependencies (numpy/pandas first, then empyrical from git)
 pip install -r requirements.txt
 
-# Or install empyrical manually first:
+# Or install manually in correct order:
+pip install numpy pandas  # Core dependencies first
 pip install -U git+https://github.com/cloudQuant/empyrical.git  # International
 pip install -U git+https://gitee.com/yunjinqi/empyrical.git     # China
+pip install scipy matplotlib seaborn statsmodels ipython pytest parameterized
 
 # Install alphalens in development mode
 pip install -U -e .
 ```
+
+### Installation Notes
+- **Dependency Order**: numpy and pandas must be installed before alphalens to avoid circular import issues during setup.py execution
+- **CI/CD Compatibility**: The setup.py has been modified to handle missing dependencies gracefully during automated builds
+- **Version Management**: Uses a simplified version system that doesn't require importing the main package during installation
 
 ### Running Tests
 ```bash

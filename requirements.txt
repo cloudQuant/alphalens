@@ -1,7 +1,8 @@
-matplotlib
+# Core dependencies (install in order)
 numpy
 pandas
 scipy
+matplotlib
 seaborn
 statsmodels
 ipython
@@ -9,6 +10,7 @@ ipython
 # International users: git+https://github.com/cloudQuant/empyrical.git
 # China users: git+https://gitee.com/yunjinqi/empyrical.git
 git+https://github.com/cloudQuant/empyrical.git
+# Test dependencies
 pytest
 pytest-benchmark
 pytest-sugar

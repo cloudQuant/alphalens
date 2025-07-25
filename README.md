@@ -50,13 +50,15 @@ Alphalens is a Python library for performance analysis of predictive (alpha) sto
 git clone https://github.com/cloudQuant/alphalens.git  # International users
 git clone https://gitee.com/yunjinqi/alphalens.git     # China users
 
-# Install dependencies (empyrical will be installed from git)
+# Install dependencies (numpy and pandas first, then empyrical from git)
 pip install -r requirements.txt  # International users
 # pip install -r requirements-cn.txt  # China users (uses Gitee mirror)
 
-# Or install empyrical manually first:
+# Or install manually in order:
+pip install numpy pandas  # Install core dependencies first
 pip install -U git+https://github.com/cloudQuant/empyrical.git  # International users
 # pip install -U git+https://gitee.com/yunjinqi/empyrical.git  # China users
+pip install scipy matplotlib seaborn statsmodels ipython pytest parameterized
 
 # Install alphalens in development mode  
 pip install -e .
@@ -236,13 +238,15 @@ Alphalens 是一个用于预测性（alpha）股票因子性能分析的 Python 
 git clone https://github.com/cloudQuant/alphalens.git  # 国外用户
 git clone https://gitee.com/yunjinqi/alphalens.git     # 国内用户
 
-# 安装依赖（empyrical将从git安装）
+# 安装依赖（先安装numpy和pandas，然后从git安装empyrical）
 pip install -r requirements-cn.txt  # 国内用户（使用Gitee镜像）
 # pip install -r requirements.txt  # 国外用户
 
-# 或者先手动安装empyrical：
+# 或者按顺序手动安装：
+pip install numpy pandas  # 先安装核心依赖
 pip install -U git+https://gitee.com/yunjinqi/empyrical.git  # 国内用户
 # pip install -U git+https://github.com/cloudQuant/empyrical.git  # 国外用户
+pip install scipy matplotlib seaborn statsmodels ipython pytest parameterized
 
 # 以开发模式安装 alphalens
 pip install -e .
