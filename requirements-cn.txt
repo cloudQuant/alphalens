@@ -1,0 +1,15 @@
+matplotlib
+numpy
+pandas
+scipy
+seaborn
+statsmodels
+ipython
+# Install empyrical from Gitee mirror for China users
+git+https://gitee.com/yunjinqi/empyrical.git
+pytest
+pytest-benchmark
+pytest-sugar
+pytest-cov
+pytest-picked
+pytest-xdist

@@ -45,7 +45,8 @@ jobs:
     - name: Install minimal dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install numpy pandas scipy matplotlib seaborn statsmodels IPython empyrical pytest
+        python -m pip install numpy pandas scipy matplotlib seaborn statsmodels IPython pytest
+        python -m pip install -U "git+https://github.com/cloudQuant/empyrical.git"
         
     - name: Install package
       run: |

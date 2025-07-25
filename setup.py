@@ -17,7 +17,9 @@ install_reqs = [
     'seaborn',
     'statsmodels',
     'IPython',
-    'empyrical',
+    # Note: empyrical should be installed via git
+    # pip install -U git+https://github.com/cloudQuant/empyrical.git
+    'empyrical @ git+https://github.com/cloudQuant/empyrical.git',
 ]
 
 extra_reqs = {

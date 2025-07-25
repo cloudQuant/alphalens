@@ -54,7 +54,9 @@ jobs:
         pip install "seaborn>=0.7" || pip install seaborn
         pip install "statsmodels>=0.6.1" || pip install statsmodels
         pip install "IPython>=3.2.3" || pip install IPython
-        pip install "empyrical" || pip install empyrical
+        
+        # Install empyrical from cloudQuant repository
+        pip install -U "git+https://github.com/cloudQuant/empyrical.git" || pip install -U "git+https://gitee.com/yunjinqi/empyrical.git"
         
         # Install test dependencies
         pip install pytest
@@ -124,7 +126,8 @@ jobs:
     - name: Install core dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython empyrical pytest
+        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython pytest
+        pip install -U "git+https://github.com/cloudQuant/empyrical.git"
         
     - name: Install package
       run: |
@@ -181,7 +184,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython empyrical
+        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython
+        pip install -U "git+https://github.com/cloudQuant/empyrical.git"
         pip install pytest pytest-cov pytest-xdist
         pip install -e .
         

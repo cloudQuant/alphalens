@@ -10,7 +10,14 @@ Alphalens is a performance analysis library for predictive (alpha) stock factors
 
 ### Installation
 ```bash
+# Install dependencies (empyrical from git repository)
 pip install -r requirements.txt
+
+# Or install empyrical manually first:
+pip install -U git+https://github.com/cloudQuant/empyrical.git  # International
+pip install -U git+https://gitee.com/yunjinqi/empyrical.git     # China
+
+# Install alphalens in development mode
 pip install -U -e .
 ```
 

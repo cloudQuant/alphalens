@@ -5,7 +5,10 @@ scipy
 seaborn
 statsmodels
 ipython
-empyrical
+# Install empyrical from cloudQuant repository
+# International users: git+https://github.com/cloudQuant/empyrical.git
+# China users: git+https://gitee.com/yunjinqi/empyrical.git
+git+https://github.com/cloudQuant/empyrical.git
 pytest
 pytest-benchmark
 pytest-sugar

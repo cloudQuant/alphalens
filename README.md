@@ -1,8 +1,22 @@
 # Alphalens
 
-<!-- Language Toggle -->
-**Language / 语言:**
-[![English](https://img.shields.io/badge/Language-English-blue)](#english) | [![中文](https://img.shields.io/badge/语言-中文-red)](#中文)
+<div align="center">
+
+[![CI Tests](https://github.com/cloudQuant/alphalens/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/cloudQuant/alphalens/actions/workflows/tests.yml)
+[![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://github.com/cloudQuant/alphalens/blob/master/LICENSE)
+[![Coverage Status](https://img.shields.io/badge/coverage-check%20CI-brightgreen)](https://github.com/cloudQuant/alphalens/actions/workflows/tests.yml)
+
+[![Code style: flake8](https://img.shields.io/badge/code%20style-flake8-black)](https://flake8.pycqa.org/)
+[![GitHub stars](https://img.shields.io/github/stars/cloudQuant/alphalens?style=social)](https://github.com/cloudQuant/alphalens/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/cloudQuant/alphalens?style=social)](https://github.com/cloudQuant/alphalens/network/members)
+[![Gitee](https://img.shields.io/badge/mirror-Gitee-red)](https://gitee.com/yunjinqi/alphalens)
+
+**Performance analysis of predictive (alpha) stock factors**
+
+[English](#english) | [中文](#中文)
+
+</div>
 
 ---
 
@@ -12,14 +26,16 @@
 
 Alphalens is a Python library for performance analysis of predictive (alpha) stock factors. Originally developed by Quantopian, this enhanced version by cloudQuant provides improved functionality and better visualization capabilities for quantitative factor analysis.
 
-**Key Features:**
-- Comprehensive factor performance analysis
-- Information Coefficient (IC) analysis  
-- Quantile-based return analysis
-- Turnover and alpha decay analysis
-- Rich visualization and tear sheet generation
-- Event study capabilities
-- Cross-platform CI/CD pipeline
+### ✨ Key Features
+
+- **📊 Comprehensive Analysis**: Factor performance, IC analysis, and quantile-based returns
+- **📈 Rich Visualizations**: Professional charts with matplotlib and seaborn  
+- **🔄 Turnover Analysis**: Alpha decay and portfolio turnover metrics
+- **📝 Tear Sheets**: Automated comprehensive factor analysis reports
+- **🎯 Event Studies**: Specialized analysis for event-driven strategies
+- **⚡ High Performance**: Optimized calculations with pandas and numpy
+- **🧪 Well Tested**: Extensive test suite across Python 3.8-3.13
+- **🌐 Cross-platform**: CI/CD pipeline supporting Windows, Linux, and macOS
 
 ### Installation
 
@@ -34,8 +50,13 @@ Alphalens is a Python library for performance analysis of predictive (alpha) sto
 git clone https://github.com/cloudQuant/alphalens.git  # International users
 git clone https://gitee.com/yunjinqi/alphalens.git     # China users
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies (empyrical will be installed from git)
+pip install -r requirements.txt  # International users
+# pip install -r requirements-cn.txt  # China users (uses Gitee mirror)
+
+# Or install empyrical manually first:
+pip install -U git+https://github.com/cloudQuant/empyrical.git  # International users
+# pip install -U git+https://gitee.com/yunjinqi/empyrical.git  # China users
 
 # Install alphalens in development mode  
 pip install -e .
@@ -44,9 +65,10 @@ pip install -e .
 python -c "import alphalens; print(f'Alphalens {alphalens.__version__} installed successfully')"
 ```
 
-#### Install from PyPI (when available)
+#### Install 
 ```bash
-pip install alphalens-reloaded
+pip install  git+https://github.com/cloudQuant/alphalens.git  # International users
+pip install  git+https://gitee.com/yunjinqi/alphalens.git     # China users
 ```
 
 ### Quick Start
@@ -190,14 +212,16 @@ If you use Alphalens in academic research, please cite:
 
 Alphalens 是一个用于预测性（alpha）股票因子性能分析的 Python 库。本项目基于 Quantopian 开发的原始版本，由 cloudQuant 进行改进优化，为量化因子分析提供了增强的功能和更好的可视化能力。
 
-**核心特性：**
-- 全面的因子性能分析
-- 信息系数（IC）分析
-- 基于分位数的收益分析  
-- 换手率和 alpha 衰减分析
-- 丰富的可视化和分析报告
-- 事件研究功能
-- 跨平台 CI/CD 流水线
+### ✨ 核心特性
+
+- **📊 全面分析**: 因子性能、IC分析和基于分位数的收益分析
+- **📈 丰富可视化**: 基于 matplotlib 和 seaborn 的专业图表
+- **🔄 换手率分析**: Alpha 衰减和组合换手率指标
+- **📝 分析报告**: 自动化的综合因子分析报告
+- **🎯 事件研究**: 专门针对事件驱动策略的分析
+- **⚡ 高性能**: 基于 pandas 和 numpy 的优化计算
+- **🧪 完整测试**: 覆盖 Python 3.8-3.13 的广泛测试套件
+- **🌐 跨平台**: 支持 Windows、Linux 和 macOS 的 CI/CD 流水线
 
 ### 安装说明
 
@@ -212,8 +236,13 @@ Alphalens 是一个用于预测性（alpha）股票因子性能分析的 Python 
 git clone https://github.com/cloudQuant/alphalens.git  # 国外用户
 git clone https://gitee.com/yunjinqi/alphalens.git     # 国内用户
 
-# 安装依赖
-pip install -r requirements.txt
+# 安装依赖（empyrical将从git安装）
+pip install -r requirements-cn.txt  # 国内用户（使用Gitee镜像）
+# pip install -r requirements.txt  # 国外用户
+
+# 或者先手动安装empyrical：
+pip install -U git+https://gitee.com/yunjinqi/empyrical.git  # 国内用户
+# pip install -U git+https://github.com/cloudQuant/empyrical.git  # 国外用户
 
 # 以开发模式安装 alphalens
 pip install -e .
@@ -222,9 +251,10 @@ pip install -e .
 python -c "import alphalens; print(f'Alphalens {alphalens.__version__} 安装成功')"
 ```
 
-#### 从 PyPI 安装（可用时）
+#### 安装
 ```bash
-pip install alphalens-reloaded
+pip install  git+https://github.com/cloudQuant/alphalens.git  # International users
+pip install  git+https://gitee.com/yunjinqi/alphalens.git     # China users
 ```
 
 ### 快速开始
