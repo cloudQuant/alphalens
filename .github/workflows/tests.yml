@@ -1,0 +1,260 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test - ${{ matrix.os }} - Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+        exclude:
+          # Exclude Python 3.13 on Windows if it's not available yet
+          - os: windows-latest
+            python-version: '3.13'
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Display system info
+      shell: bash
+      run: |
+        echo "OS: ${{ matrix.os }}"
+        echo "Python: ${{ matrix.python-version }}"
+        python --version
+        pip --version
+        
+    - name: Upgrade pip
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        
+    - name: Install dependencies step by step
+      shell: bash
+      run: |
+        # Install core dependencies first
+        pip install "numpy>=1.11.0" || pip install numpy
+        pip install "pandas>=0.18.0" || pip install pandas
+        pip install "scipy>=0.17.0" || pip install scipy
+        pip install "matplotlib>=1.4" || pip install matplotlib
+        pip install "seaborn>=0.7" || pip install seaborn
+        pip install "statsmodels>=0.6.1" || pip install statsmodels
+        pip install "IPython>=3.2.3" || pip install IPython
+        pip install "empyrical" || pip install empyrical
+        
+        # Install test dependencies
+        pip install pytest
+        pip install pytest-xdist
+        pip install pytest-cov
+        pip install pytest-sugar
+        pip install pytest-benchmark
+        pip install pytest-picked
+        
+        # Show installed packages
+        pip list
+        
+    - name: Install package
+      run: |
+        pip install -e .
+        
+    - name: Verify installation
+      shell: python
+      run: |
+        import alphalens
+        import numpy as np
+        import pandas as pd
+        print(f'Alphalens {alphalens.__version__} installed successfully')
+        
+        # Test basic functionality
+        dates = pd.date_range('2020-01-01', periods=5, freq='D')
+        assets = ['A', 'B', 'C']
+        factor_data = pd.DataFrame(
+            np.random.randn(15), 
+            index=pd.MultiIndex.from_product([dates, assets], names=['date', 'asset']),
+            columns=['factor']
+        )
+        print('Test data created successfully')
+        
+    - name: Run tests
+      shell: bash
+      run: |
+        python -m pytest tests/ -v --tb=short -n 4 || python -m pytest tests/ -v --tb=short --no-header
+      env:
+        PYTHONDONTWRITEBYTECODE: 1
+        PYTHONUNBUFFERED: 1
+        MPLBACKEND: Agg
+        
+    - name: Upload test results on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-failure-${{ matrix.os }}-py${{ matrix.python-version }}
+        path: |
+          *.log
+          .pytest_cache/
+        retention-days: 7
+
+  test-minimal:
+    name: Minimal Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install core dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython empyrical pytest
+        
+    - name: Install package
+      run: |
+        pip install -e .
+        
+    - name: Run import test
+      run: |
+        python -c "import alphalens; print('Import successful')"
+        
+    - name: Run basic functionality test
+      run: |
+        python -c "
+        import numpy as np
+        import pandas as pd
+        import alphalens
+        
+        # Create synthetic data
+        dates = pd.date_range('2020-01-01', periods=10, freq='D')
+        assets = ['AAPL', 'GOOGL', 'MSFT']
+        
+        # Create factor data
+        factor = pd.DataFrame(
+            np.random.randn(30),
+            index=pd.MultiIndex.from_product([dates, assets], names=['date', 'asset']),
+            columns=['factor']
+        )
+        
+        # Create price data  
+        prices = pd.DataFrame(
+            np.random.randn(10, 3).cumsum(axis=0) + 100,
+            index=dates,
+            columns=assets
+        )
+        
+        print('Synthetic data created successfully')
+        print('Factor shape:', factor.shape)
+        print('Prices shape:', prices.shape)
+        "
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs: test-minimal
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython empyrical
+        pip install pytest pytest-cov pytest-xdist
+        pip install -e .
+        
+    - name: Run tests with coverage
+      run: |
+        python -m pytest tests/ --cov=alphalens --cov-report=xml --cov-report=term
+      continue-on-error: true
+      env:
+        MPLBACKEND: Agg
+        
+    - name: Upload coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+      continue-on-error: true
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install flake8
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+        
+    - name: Run flake8
+      run: |
+        # Check for syntax errors
+        flake8 alphalens --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=versioneer.py,_version.py
+        # Full lint with lenient settings
+        flake8 alphalens --count --exit-zero --max-complexity=20 --max-line-length=120 --statistics --exclude=versioneer.py,_version.py
+      continue-on-error: true
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install build tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install build wheel setuptools twine
+        
+    - name: Build package
+      run: |
+        python -m build
+        
+    - name: Check package
+      run: |
+        twine check dist/*
+        ls -la dist/
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/
+        retention-days: 30

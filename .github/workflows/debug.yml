@@ -1,0 +1,87 @@
+name: Debug CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ debug-* ]
+
+jobs:
+  debug:
+    name: Debug on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: System info
+      run: |
+        echo "=== System Information ==="
+        echo "OS: ${{ matrix.os }}"
+        python --version
+        python -m pip --version
+        
+    - name: Show directory structure
+      run: |
+        echo "=== Repository Structure ==="
+        ls -la
+        echo ""
+        echo "=== Tests Directory ==="
+        ls -la tests/
+        echo ""
+        echo "=== Alphalens Package ==="
+        ls -la alphalens/
+        
+    - name: Install minimal dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install numpy pandas scipy matplotlib seaborn statsmodels IPython empyrical pytest
+        
+    - name: Install package
+      run: |
+        echo "=== Installing alphalens ==="
+        python -m pip install -e .
+        echo ""
+        echo "=== Installed packages ==="
+        python -m pip list
+        
+    - name: Test imports
+      run: |
+        echo "=== Testing imports ==="
+        python -c "import sys; print('Python path:', sys.path)"
+        python -c "import alphalens; print('Alphalens location:', alphalens.__file__)"
+        python -c "from alphalens import utils; print('utils imported')"
+        python -c "from alphalens import performance; print('performance imported')"
+        python -c "from alphalens import plotting; print('plotting imported')"
+        python -c "from alphalens import tears; print('tears imported')"
+        
+    - name: Find test files
+      run: |
+        echo "=== Finding test files ==="
+        find . -name "test_*.py" -type f || echo "No test files found with find"
+        echo ""
+        echo "=== Pytest collection ==="
+        python -m pytest --collect-only tests/
+        
+    - name: Run single test verbose
+      run: |
+        echo "=== Running single test ==="
+        python -m pytest tests/test_utils.py -vvs -k "test" | head -50
+      continue-on-error: true
+      env:
+        MPLBACKEND: Agg
+        
+    - name: List all available tests
+      run: |
+        echo "=== All available tests ==="
+        python -m pytest tests/ --collect-only -q
