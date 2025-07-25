@@ -41,7 +41,7 @@ Alphalens is a Python library for performance analysis of predictive (alpha) sto
 
 #### Prerequisites
 - Python 3.8+ (Python 3.11+ recommended for better performance)
-- Required packages: numpy, pandas, scipy, matplotlib, seaborn, statsmodels, empyrical
+- Required packages: numpy, pandas, scipy, matplotlib, seaborn, statsmodels, empyrical, parameterized
 
 #### Install from Source
 
@@ -227,7 +227,7 @@ Alphalens 是一个用于预测性（alpha）股票因子性能分析的 Python 
 
 #### 环境要求
 - Python 3.8+（推荐 Python 3.11+ 以获得更好性能）
-- 依赖包：numpy, pandas, scipy, matplotlib, seaborn, statsmodels, empyrical
+- 依赖包：numpy, pandas, scipy, matplotlib, seaborn, statsmodels, empyrical, parameterized
 
 #### 从源码安装
 

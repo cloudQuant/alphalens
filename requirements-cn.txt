@@ -13,3 +13,4 @@ pytest-sugar
 pytest-cov
 pytest-picked
 pytest-xdist
+parameterized

@@ -24,9 +24,13 @@ install_reqs = [
 
 extra_reqs = {
     'test': [
-        "nose>=1.3.7",
-        "parameterized>=0.5.0",
-        "tox>=2.3.1",
+        "pytest>=6.0",
+        "pytest-xdist>=2.0",
+        "pytest-cov>=2.10",
+        "pytest-sugar>=0.9",
+        "pytest-benchmark>=3.4",
+        "pytest-picked>=0.4",
+        "parameterized>=0.7",
         "flake8>=3.7.9",
     ],
 }

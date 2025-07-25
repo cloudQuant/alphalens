@@ -65,6 +65,7 @@ jobs:
         pip install pytest-sugar
         pip install pytest-benchmark
         pip install pytest-picked
+        pip install parameterized
         
         # Show installed packages
         pip list
@@ -126,7 +127,7 @@ jobs:
     - name: Install core dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython pytest
+        pip install numpy pandas scipy matplotlib seaborn statsmodels IPython pytest parameterized
         pip install -U "git+https://github.com/cloudQuant/empyrical.git"
         
     - name: Install package
@@ -186,7 +187,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install numpy pandas scipy matplotlib seaborn statsmodels IPython
         pip install -U "git+https://github.com/cloudQuant/empyrical.git"
-        pip install pytest pytest-cov pytest-xdist
+        pip install pytest pytest-cov pytest-xdist parameterized
         pip install -e .
         
     - name: Run tests with coverage
